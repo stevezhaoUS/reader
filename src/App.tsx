@@ -1,26 +1,60 @@
+import { Container } from '@material-ui/core';
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import './App.jss';
+import SideMenu from './components/sideMenu/SideMenu';
+import Shelf from './components/shelf/Shelf';
+import Reader from './components/reader/Reader';
 
-const App: React.FC = () => {
+const routes = [
+  {
+    path: "/shelf",
+    component: Shelf
+  },
+  {
+    path: "/read",
+    component: Reader
+  }
+]
+
+
+
+
+const App: React.FC  = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn 
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Container fixed disableGutters>
+        <div className="grow">
+          <Switch>
+            {routes.map((route, i) => (
+              <RouteWithSubRoutes key={i} {...route} />
+            ))}
+          </Switch>
+          <footer>
+          </footer>
+        </div>
+        <SideMenu />
+      </Container>
+    </Router>
   );
 }
 
-export default App;
+function RouteWithSubRoutes(route: any) {
+  return (
+    <Route
+      path={route.path}
+      render={props => (
+        <route.component {...props} routes={route.routes} />
+      )}
+    />
+  );
+}
+
+const mapStateToProps = (state: any) => ({
+  sideMenu: state.sideMenu
+})
+
+
+
+export default connect(mapStateToProps)(App);
