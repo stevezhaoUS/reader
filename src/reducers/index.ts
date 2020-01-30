@@ -1,7 +1,11 @@
 import { combineReducers } from "redux"
-import { SideMenu } from './SideMenu';
+import Shelf from './Shelf.reducer.';
+import Reader from './Reader.reducer'
 
 export const rootReducer = combineReducers({
-    SideMenu
-})
+    Shelf,
+    Reader
+});
+
+export type AppState = ReturnType<typeof rootReducer>;
 

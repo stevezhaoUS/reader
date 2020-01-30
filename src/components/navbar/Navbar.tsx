@@ -19,7 +19,7 @@ type Props =  ReturnType<typeof  mapStateToProps>
 
 const NavBar: React.FC<Props> = (props: Props ) => {
     const classes = styles()
-    const {dispatch} =props;
+    const { dispatch } = props;
 
     const onHumbergerClick = () => {
         dispatch(actionToggleSideMenu())
