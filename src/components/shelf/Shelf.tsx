@@ -1,13 +1,28 @@
 import { GridList, GridListTile, GridListTileBar, IconButton } from "@material-ui/core";
-import React from 'react';
-import { connect } from 'react-redux';
-import styles from './Shelf.jss';
 import { MoreHoriz } from "@material-ui/icons";
+import React from 'react';
+import { connect, DispatchProp } from 'react-redux';
+import { actionToggleSideMenu } from '../../actions/Menus';
+import { AppState } from "../../reducers";
+import { ShelfStates } from '../../reducers/Shelf.reducer.';
+import { IAction } from "../../types/actions";
 import NavBar from '../navbar/Navbar';
+import { SideMenu } from '../sideMenu/SideMenu';
+import styles from './Shelf.jss';
 
+const mapStateToProps = (state: AppState)  => ({
+    showSideMenu: state.Shelf.showSideMenu
+});
 
-const Shelf: React.FC = (props) => {
+type PropsType = ShelfStates & DispatchProp<IAction>;
+
+const Shelf: React.FC<PropsType> = (props: PropsType) => {
     const classes = styles();
+    const { dispatch } = props;
+
+    const toggleSideMenu = () => {
+        dispatch(actionToggleSideMenu())
+    }
 
     return (
         <div className={classes.root}>
@@ -31,15 +46,10 @@ const Shelf: React.FC = (props) => {
                         />
                     </GridListTile>
                 ))}
-
-                
-
-                
-
-                
             </GridList>
+            <SideMenu open={props.showSideMenu} onClose={toggleSideMenu}  />
         </div>
     )
 }
 
-export default connect()(Shelf);
+export default connect(mapStateToProps)(Shelf);

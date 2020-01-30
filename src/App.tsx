@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.jss';
-import SideMenu from './components/sideMenu/SideMenu';
 import Shelf from './components/shelf/Shelf';
 import Reader from './components/reader/Reader';
 
@@ -18,9 +17,6 @@ const routes = [
   }
 ]
 
-
-
-
 const App: React.FC  = () => {
   return (
     <Router>
@@ -34,7 +30,6 @@ const App: React.FC  = () => {
           <footer>
           </footer>
         </div>
-        <SideMenu />
       </Container>
     </Router>
   );
