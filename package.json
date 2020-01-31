@@ -48,5 +48,6 @@
   "devDependencies": {
     "@redux-saga/simple-saga-monitor": "^1.1.2",
     "@types/react-redux": "^7.1.6"
-  }
+  },
+  "proxy": "http://localhost:8001"
 }

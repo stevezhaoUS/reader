@@ -1,6 +1,6 @@
+import { Button, ButtonGroup, Divider, List, ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
-import { List, ListItem, ListSubheader, ButtonGroup, Button, ListItemIcon, ListItemText, Typography, Divider } from '@material-ui/core';
-export const Font = () => (
+export const Font:React.FC = () => (
     <List disablePadding>
         <ListItem>
             <ListItemText primary="Font Size">

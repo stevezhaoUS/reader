@@ -1,9 +1,9 @@
 import React from 'react';
-import { List, ListItem, Divider, Slider, ListItemText, Switch, IconButton } from '@material-ui/core';
+import { List, ListItem, Divider, Slider, ListItemText, Switch, IconButton, WithStyles } from '@material-ui/core';
 import Brightness1RoundedIcon from '@material-ui/icons/Brightness1Rounded';
 import Brightness3RoundedIcon from '@material-ui/icons/Brightness3Rounded';
 
-export const Brightness = () => (
+export const Brightness:React.FC = () => (
     <List disablePadding dense>
         <ListItem>
             <IconButton>

@@ -1,9 +1,9 @@
 
 import { Button, ButtonGroup, List, ListItem } from '@material-ui/core';
+import { WithStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 
-export const Read = () => {
+export const Read:React.FC = () => {
     return (
         <List dense >
             <ListItem>
