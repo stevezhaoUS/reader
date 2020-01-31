@@ -8,16 +8,16 @@ import Reader from './components/reader/Reader';
 
 const routes = [
   {
-    path: "/shelf",
+    path: '/shelf',
     component: Shelf
   },
   {
-    path: "/read",
+    path: '/read',
     component: Reader
   }
-]
+];
 
-const App: React.FC  = () => {
+const App: React.FC = () => {
   return (
     <Router>
       <Container fixed disableGutters>
@@ -27,29 +27,24 @@ const App: React.FC  = () => {
               <RouteWithSubRoutes key={i} {...route} />
             ))}
           </Switch>
-          <footer>
-          </footer>
+          <footer />
         </div>
       </Container>
     </Router>
   );
-}
+};
 
 function RouteWithSubRoutes(route: any) {
   return (
     <Route
       path={route.path}
-      render={props => (
-        <route.component {...props} routes={route.routes} />
-      )}
+      render={props => <route.component {...props} routes={route.routes} />}
     />
   );
 }
 
 const mapStateToProps = (state: any) => ({
   sideMenu: state.sideMenu
-})
-
-
+});
 
 export default connect(mapStateToProps)(App);
