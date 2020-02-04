@@ -1,9 +1,9 @@
-import { Container } from '@material-ui/core';
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { actionToggleControlPanel } from '../../actions/Menus';
-import { ControlPanel } from './ControlPanel';
-import styles from './Reader.jss';
+import { Container } from "@material-ui/core";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { actionToggleControlPanel } from "../../actions";
+import { ControlPanel } from "./ControlPanel";
+import styles from "./Reader.jss";
 
 const Reader: React.FC = () => {
   const dispatch = useDispatch();

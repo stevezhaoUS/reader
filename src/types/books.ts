@@ -1,9 +1,9 @@
-export type LanguageCode = 'en' | 'zh-cn';
+export type LanguageCode = "en" | "zh-cn";
 export interface BookMeta {
   title: string;
   author: string;
   cover?: string;
-  size: number;
+  wordCount?: number;
   category?: string;
   language: LanguageCode;
   latestChapter?: string;

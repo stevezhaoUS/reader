@@ -1,31 +1,34 @@
-import { Container } from '@material-ui/core';
-import React from 'react';
-import { connect } from 'react-redux';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import './App.jss';
-import Shelf from './components/shelf/Shelf';
-import Reader from './components/reader/Reader';
+import { Container } from "@material-ui/core";
+import React from "react";
+import { connect, DispatchProp } from "react-redux";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect
+} from "react-router-dom";
+import "./App.jss";
+import Shelf from "./components/shelf/Shelf";
+import Reader from "./components/reader/Reader";
+import * as actions from "./actions/shelfAction";
+import { IAction } from "./types/actions";
 
-const routes = [
-  {
-    path: '/shelf',
-    component: Shelf
-  },
-  {
-    path: '/read',
-    component: Reader
-  }
-];
-
-const App: React.FC = () => {
+const App: React.FC<DispatchProp<IAction>> = props => {
+  const { dispatch } = props;
   return (
     <Router>
       <Container fixed disableGutters>
         <div className="grow">
           <Switch>
-            {routes.map((route, i) => (
-              <RouteWithSubRoutes key={i} {...route} />
-            ))}
+            <Route
+              path="/shelf"
+              render={() => {
+                dispatch(actions.fetchShelf());
+                return <Shelf />;
+              }}
+            />
+            <Route path="/read" component={Reader} />
+            <Route path="/" render={() => <Redirect to="shelf" />} />
           </Switch>
           <footer />
         </div>
@@ -33,15 +36,6 @@ const App: React.FC = () => {
     </Router>
   );
 };
-
-function RouteWithSubRoutes(route: any) {
-  return (
-    <Route
-      path={route.path}
-      render={props => <route.component {...props} routes={route.routes} />}
-    />
-  );
-}
 
 const mapStateToProps = (state: any) => ({
   sideMenu: state.sideMenu
