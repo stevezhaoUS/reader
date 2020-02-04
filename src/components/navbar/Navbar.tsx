@@ -1,15 +1,15 @@
-import React from 'react';
-import AppBar from '@material-ui/core/AppBar/AppBar';
-import Toolbar from '@material-ui/core/Toolbar/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
-import styles from './Navbar.jss';
-import SearchIcon from '@material-ui/icons/Search';
-import { DispatchProp, connect } from 'react-redux';
-import { actionToggleSideMenu } from '../../actions/Menus';
-import { IAction } from '../../types/actions';
+import React from "react";
+import AppBar from "@material-ui/core/AppBar/AppBar";
+import Toolbar from "@material-ui/core/Toolbar/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import Typography from "@material-ui/core/Typography";
+import InputBase from "@material-ui/core/InputBase";
+import styles from "./Navbar.jss";
+import SearchIcon from "@material-ui/icons/Search";
+import { DispatchProp, connect } from "react-redux";
+import { actionToggleSideMenu } from "../../actions";
+import { IAction } from "../../types/actions";
 
 const mapStateToProps = (state: any) => ({});
 
@@ -48,7 +48,7 @@ const NavBar: React.FC<Props> = (props: Props) => {
               root: classes.inputRoot,
               input: classes.inputInput
             }}
-            inputProps={{ 'aria-label': 'search' }}
+            inputProps={{ "aria-label": "search" }}
           />
           <div className={classes.grow} />
         </div>
