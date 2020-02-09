@@ -17,6 +17,7 @@ import NavBar from "../navbar/Navbar";
 import { SideMenu } from "../sideMenu/SideMenu";
 import styles from "./Shelf.jss";
 import { Book } from "../../types/books";
+import { useHistory } from "react-router";
 
 const mapStateToProps = (state: AppState) => ({
   showSideMenu: state.Shelf.showSideMenu,
@@ -28,7 +29,9 @@ type PropsType = ShelfStates & DispatchProp<IAction>;
 const Shelf: React.FC<PropsType> = (props: PropsType) => {
   const classes = styles();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const { dispatch, books } = props;
+  const { dispatch, books} = props;
+  const history = useHistory()
+
 
   const toggleSideMenu = () => {
     dispatch(actions.actionToggleSideMenu());
@@ -44,17 +47,21 @@ const Shelf: React.FC<PropsType> = (props: PropsType) => {
     setAnchorEl(null);
   };
 
+  const openBook = (id: string) => {
+    history.push(`/read/${id}`)
+  }
+
   return (
     <div className={classes.root}>
       <NavBar />
       <GridList
-        cols={3}
+        cols={2}
         cellHeight={240}
         spacing={16}
         className={classes.gridList}
       >
         {books.map((book: Book, i) => (
-          <GridListTile key={i} onClick={() => alert("ok")}>
+          <GridListTile key={i} onClick={() => openBook(book.uuid)}>
             <img src={book.meta.cover || "no_img.png"} alt="" />
             <GridListTileBar
               title={book.meta.title}

@@ -1,9 +1,10 @@
-import { Container } from "@material-ui/core";
+import { Container, ListItemText, ListItem } from "@material-ui/core";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { actionToggleControlPanel } from "../../actions";
 import { ControlPanel } from "./ControlPanel";
 import styles from "./Reader.jss";
+import { FixedSizeList } from 'react-window';
 
 const Reader: React.FC = () => {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const Reader: React.FC = () => {
   return (
     <React.Fragment>
       <Container className={classes.root} onClick={toggleControlPanel}>
-        <h1>READING...</h1>
+
       </Container>
       <ControlPanel />
     </React.Fragment>

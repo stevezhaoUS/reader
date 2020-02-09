@@ -17,6 +17,7 @@ export interface Chapter {
 }
 
 export interface Book {
+  uuid: string;
   meta: BookMeta;
   path: string;
   latestPosition: number;
