@@ -15,7 +15,7 @@ extension GetBookCollection on Isar {
 
 const BookSchema = CollectionSchema(
   name: r'Book',
-  id: 479470416465,
+  id: 4089735379470416465,
   properties: {
     r'author': PropertySchema(
       id: 0,
@@ -55,7 +55,7 @@ const BookSchema = CollectionSchema(
   getId: _bookGetId,
   getLinks: _bookGetLinks,
   attach: _bookAttach,
-  version: '3.1.0',
+  version: '3.1.0+1',
 );
 
 int _bookEstimateSize(
@@ -208,7 +208,8 @@ extension BookQueryWhere on QueryBuilder<Book, Book, QWhereClause> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+  QueryBuilder<Book, Book, QAfterWhereClause> idGreaterThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -216,7 +217,8 @@ extension BookQueryWhere on QueryBuilder<Book, Book, QWhereClause> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<Book, Book, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -386,7 +388,8 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> chaptersLengthEqualTo(int length) {
+  QueryBuilder<Book, Book, QAfterFilterCondition> chaptersLengthEqualTo(
+      int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'chapters',
@@ -469,7 +472,8 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> currentChapterIdEqualTo(int value) {
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentChapterIdEqualTo(
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'currentChapterId',
@@ -661,7 +665,8 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastChapterTitleContains(String value,
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastChapterTitleContains(
+      String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -672,7 +677,8 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastChapterTitleMatches(String pattern,
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastChapterTitleMatches(
+      String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -847,7 +853,8 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
 }
 
 extension BookQueryObject on QueryBuilder<Book, Book, QFilterCondition> {
-  QueryBuilder<Book, Book, QAfterFilterCondition> chaptersElement(FilterQuery<Chapter> q) {
+  QueryBuilder<Book, Book, QAfterFilterCondition> chaptersElement(
+      FilterQuery<Chapter> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'chapters');
     });
@@ -969,7 +976,8 @@ extension BookQuerySortThenBy on QueryBuilder<Book, Book, QSortThenBy> {
 }
 
 extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
-  QueryBuilder<Book, Book, QDistinct> distinctByAuthor({bool caseSensitive = true}) {
+  QueryBuilder<Book, Book, QDistinct> distinctByAuthor(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'author', caseSensitive: caseSensitive);
     });
@@ -981,13 +989,16 @@ extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
     });
   }
 
-  QueryBuilder<Book, Book, QDistinct> distinctByLastChapterTitle({bool caseSensitive = true}) {
+  QueryBuilder<Book, Book, QDistinct> distinctByLastChapterTitle(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastChapterTitle', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'lastChapterTitle',
+          caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Book, Book, QDistinct> distinctByTitle({bool caseSensitive = true}) {
+  QueryBuilder<Book, Book, QDistinct> distinctByTitle(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
     });
@@ -1041,7 +1052,7 @@ extension BookQueryProperty on QueryBuilder<Book, Book, QQueryProperty> {
 
 const ChapterSchema = Schema(
   name: r'Chapter',
-  id: -611156012,
+  id: -7604549436611156012,
   properties: {
     r'content': PropertySchema(
       id: 0,
@@ -1120,7 +1131,8 @@ P _chapterDeserializeProp<P>(
   }
 }
 
-extension ChapterQueryFilter on QueryBuilder<Chapter, Chapter, QFilterCondition> {
+extension ChapterQueryFilter
+    on QueryBuilder<Chapter, Chapter, QFilterCondition> {
   QueryBuilder<Chapter, Chapter, QAfterFilterCondition> contentIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1225,7 +1237,8 @@ extension ChapterQueryFilter on QueryBuilder<Chapter, Chapter, QFilterCondition>
     });
   }
 
-  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> contentContains(String value,
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> contentContains(
+      String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -1236,7 +1249,8 @@ extension ChapterQueryFilter on QueryBuilder<Chapter, Chapter, QFilterCondition>
     });
   }
 
-  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> contentMatches(String pattern,
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> contentMatches(
+      String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -1369,7 +1383,8 @@ extension ChapterQueryFilter on QueryBuilder<Chapter, Chapter, QFilterCondition>
     });
   }
 
-  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> titleContains(String value,
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> titleContains(
+      String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -1380,7 +1395,8 @@ extension ChapterQueryFilter on QueryBuilder<Chapter, Chapter, QFilterCondition>
     });
   }
 
-  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> titleMatches(String pattern,
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> titleMatches(
+      String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -1410,4 +1426,5 @@ extension ChapterQueryFilter on QueryBuilder<Chapter, Chapter, QFilterCondition>
   }
 }
 
-extension ChapterQueryObject on QueryBuilder<Chapter, Chapter, QFilterCondition> {}
+extension ChapterQueryObject
+    on QueryBuilder<Chapter, Chapter, QFilterCondition> {}
