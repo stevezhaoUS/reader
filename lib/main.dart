@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 import 'package:reader/settings.dart';
 import 'book_shelf.dart';
 
 Future main() async {
+  // await DBManager.instance.isar;
   WidgetsFlutterBinding.ensureInitialized();
-  await Isar.initializeIsarCore();
   runApp(MyApp());
 }
 

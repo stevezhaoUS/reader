@@ -1,41 +1,52 @@
+import 'package:async/async.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-
 import 'models/book.dart'; // Import your model classes
 
-class DatabaseManager {
-  static DatabaseManager? _instance;
-  late final Isar _isar;
+class DBManager {
+  // Singleton pattern
+  static final DBManager _dbManager = DBManager._internal();
+  DBManager._internal();
+  static DBManager get instance => _dbManager;
 
-  static Future<DatabaseManager> getInstance() async {
-    if (_instance == null) {
-      _instance = DatabaseManager();
-      await _instance!._initIsar();
-    }
+  // Members
+  static late Isar _isar;
+  final _initDBMemoizer = AsyncMemoizer<Isar>();
 
-    return _instance!;
+  Future<Isar> get isar async {
+    // ignore: unnecessary_null_comparison
+
+    // if _database is null we instantiate it
+    _isar = await _initDBMemoizer.runOnce(() async {
+      return await _initDB();
+    });
+    return _isar;
   }
 
-  Future<void> _initIsar() async {
+  Future<Isar> _initDB() async {
+    // .. Copy initial database (data.db) from assets file to database path
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    _isar = await Isar.open([BookSchema], directory: appDocumentDir.path);
+    return await Isar.open([BookSchema], directory: appDocumentDir.path);
   }
 
-  Future<void> insertBook(Book book) async {
+  Future<void> updateBook(Book book) async {
     await _isar.writeTxn(() async {
       _isar.books.put(book);
     });
   }
 
   Future<List<Book>> getAllBooks() async {
-    return await _isar.books.where().offset(0).limit(10).findAll();
+    final db = await isar;
+    return db.books.where().offset(0).limit(10).findAll();
   }
 
   Future<List<Book>> getBook(String bookTitle) async {
-    return await _isar.books.filter().titleMatches(bookTitle).findAll();
+    final db = await isar;
+    return await db.books.filter().titleMatches(bookTitle).findAll();
   }
 
   Future<Book?> getBookById(int id) async {
-    return await _isar.books.filter().idEqualTo(id).findFirst();
+    final db = await isar;
+    return await db.books.filter().idEqualTo(id).findFirst();
   }
 }

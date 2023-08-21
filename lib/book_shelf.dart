@@ -16,7 +16,7 @@ class BookshelfPage extends StatefulWidget {
 
 class _BookshelfPageState extends State<BookshelfPage> {
   final LocalFileProcessor _localFileProcessor = LocalFileProcessor();
-
+  final DBManager dbManager = DBManager.instance;
   List<Book> books = [];
 
   @override
@@ -26,7 +26,6 @@ class _BookshelfPageState extends State<BookshelfPage> {
   }
 
   Future<void> _loadBooks() async {
-    final DatabaseManager dbManager = await DatabaseManager.getInstance();
     final allBooks = await dbManager.getAllBooks();
     setState(() {
       books = allBooks;
@@ -57,16 +56,25 @@ class _BookshelfPageState extends State<BookshelfPage> {
         itemCount: books.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(books[index].title ?? ''),
-            subtitle: Text(books[index].author ?? ''),
-            onTap: () {
+            title: Text('${books[index].title} - ${books[index].author}'),
+            subtitle: Text(books[index].lastChapterTitle),
+            onTap: () async {
               // Navigate to the ReadingPage with the selected book
-              Navigator.push(
+              final readingStatus = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ReadingPage(book: books[index]),
                 ),
               );
+              if (readingStatus != null) {
+                final [title, chapIdx] = readingStatus;
+                setState(() {
+                  books[index].currentChapterId = chapIdx;
+                  books[index].lastChapterTitle = title;
+                  books = books;
+                  dbManager.updateBook(books[index]);
+                });
+              }
             },
           );
         },

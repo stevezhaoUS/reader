@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reader/database_manager.dart';
 
 import 'models/book.dart';
 
@@ -46,92 +47,113 @@ class _ReadingPageState extends State<ReadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Read the content of the book from the file path
-    // You'll need to implement this part
     final title = chapterTitle;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(chapterContent),
-          ),
-          if (_bottomAppBarVisible)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: BottomAppBar(
+    final paragraphs = chapterContent.split(RegExp(r'\s{2,}'));
+
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: GestureDetector(
+          onTap: () {
+            _toggleBottomAppBarVisibility();
+          },
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: paragraphs
+                          .map((paragraph) => Container(
+                              margin: const EdgeInsets.only(bottom: 16.0),
+                              child: Text(style: TextStyle(fontSize: 16.0), paragraph)))
+                          .toList()),
+                ),
+              ),
+              if (_bottomAppBarVisible)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: BottomAppBar(
+                      child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          if (chapterIdx > 0) {
-                            chapterIdx--;
-                            setState(() {
-                              chapterTitle = widget.book.chapters[chapterIdx--].title!;
-                              chapterContent = widget.book.chapters[chapterIdx--].content!;
-                            });
-                          }
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () {
+                              if (chapterIdx > 0) {
+                                chapterIdx--;
+                                setState(() {
+                                  chapterTitle = widget.book.chapters[chapterIdx--].title!;
+                                  chapterContent = widget.book.chapters[chapterIdx--].content!;
+                                });
+                              }
+                            },
+                          ),
+                          Expanded(
+                            child: Slider(
+                              value: 0.5, // Replace with actual progress value
+                              onChanged: (value) {
+                                // Handle progress change
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: () {
+                              if (chapterIdx < widget.book.chapters.length - 1) {
+                                chapterIdx++;
+                                setState(() {
+                                  chapterTitle = widget.book.chapters[chapterIdx].title!;
+                                  chapterContent = widget.book.chapters[chapterIdx].content!;
+                                });
+                              }
+                              // Handle next chapter navigation
+                            },
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Slider(
-                          value: 0.5, // Replace with actual progress value
-                          onChanged: (value) {
-                            // Handle progress change
+                      Divider(),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        IconButton(
+                          icon: Icon(Icons.list),
+                          onPressed: () {
+                            // Handle bookmark button
                           },
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: () {
-                          if (chapterIdx < widget.book.chapters.length - 1) {
-                            chapterIdx++;
-                            setState(() {
-                              chapterTitle = widget.book.chapters[chapterIdx].title!;
-                              chapterContent = widget.book.chapters[chapterIdx].content!;
-                            });
-                          }
-                          // Handle next chapter navigation
-                        },
-                      ),
+                        IconButton(
+                          icon: Icon(Icons.nightlight),
+                          onPressed: () {
+                            // Handle favorite button
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.font_download),
+                          onPressed: () {
+                            // Handle favorite button
+                          },
+                        ),
+                      ])
                     ],
-                  ),
-                  Divider(),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    IconButton(
-                      icon: Icon(Icons.list),
-                      onPressed: () {
-                        // Handle bookmark button
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.nightlight),
-                      onPressed: () {
-                        // Handle favorite button
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.font_download),
-                      onPressed: () {
-                        // Handle favorite button
-                      },
-                    ),
-                  ])
-                ],
-              )),
-            )
-        ],
+                  )),
+                )
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  Future<bool> _onBackPressed() async {
+    Navigator.pop(context, [chapterTitle, chapterIdx]);
+    return Future.value(true); // Return true to allow back navigation, false to prevent
   }
 }

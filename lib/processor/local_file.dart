@@ -13,7 +13,7 @@ class LocalFileProcessor {
   String author = '';
 
   Future<void> loadAndProcessFile(String filePath) async {
-    final dbHelper = await DatabaseManager.getInstance();
+    final dbHelper = DBManager.instance;
     title = basenameWithoutExtension(filePath);
 
     final file = File(filePath);
@@ -51,6 +51,6 @@ class LocalFileProcessor {
         buffer.write(chunk);
       }
     }
-    await dbHelper.insertBook(book);
+    await dbHelper.updateBook(book);
   }
 }
