@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reader/database_manager.dart';
+import 'package:reader/ui/paragraph.dart';
 
 import 'models/book.dart';
 
@@ -64,15 +65,10 @@ class _ReadingPageState extends State<ReadingPage> {
             children: [
               SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: paragraphs
-                          .map((paragraph) => Container(
-                              margin: const EdgeInsets.only(bottom: 16.0),
-                              child: Text(style: TextStyle(fontSize: 16.0), paragraph)))
-                          .toList()),
-                ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Paragraph(
+                      paragraphs: paragraphs,
+                    )),
               ),
               if (_bottomAppBarVisible)
                 Positioned(
