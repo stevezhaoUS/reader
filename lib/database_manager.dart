@@ -49,4 +49,11 @@ class DBManager {
     final db = await isar;
     return await db.books.filter().idEqualTo(id).findFirst();
   }
+
+  Future deleteBook(int id) async {
+    final db = await isar;
+    return await db.writeTxn(() async {
+      await db.books.delete(id);
+    });
+  }
 }
