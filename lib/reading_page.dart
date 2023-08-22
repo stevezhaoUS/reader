@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:reader/database_manager.dart';
 import 'package:reader/ui/paragraph.dart';
 
 import 'models/book.dart';
@@ -7,7 +6,7 @@ import 'models/book.dart';
 class ReadingPage extends StatefulWidget {
   final Book book;
 
-  ReadingPage({required this.book});
+  const ReadingPage({super.key, required this.book});
 
   @override
   State<ReadingPage> createState() => _ReadingPageState();
@@ -88,8 +87,8 @@ class _ReadingPageState extends State<ReadingPage> {
                               if (chapterIdx > 0) {
                                 chapterIdx--;
                                 setState(() {
-                                  chapterTitle = widget.book.chapters[chapterIdx--].title!;
-                                  chapterContent = widget.book.chapters[chapterIdx--].content!;
+                                  chapterTitle = widget.book.chapters[chapterIdx].title!;
+                                  chapterContent = widget.book.chapters[chapterIdx].content!;
                                 });
                               }
                             },

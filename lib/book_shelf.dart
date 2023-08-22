@@ -4,7 +4,7 @@ import 'package:reader/database_manager.dart';
 import 'package:reader/processor/local_file.dart';
 
 import 'models/book.dart';
-import 'reading-page.dart';
+import 'reading_page.dart';
 import 'dart:developer' as developer;
 
 class BookshelfPage extends StatefulWidget {
