@@ -67,11 +67,7 @@ class _BookshelfPageState extends State<BookshelfPage> {
                 return Dismissible(
                   key: Key(books[index].id.toString()), // Use a unique key for each book
                   onDismissed: (direction) {
-                    // Remove the book from the list and the database
-                    // dbManager.deleteBook(books[index].id); // Delete the book from the database
-                    setState(() {
-                      // books.removeAt(index);
-                    });
+                    if (direction == DismissDirection.startToEnd) isar.deleteBook(books[index].id);
                   },
                   background: Container(
                     color: Colors.red, // Background color when swiping
