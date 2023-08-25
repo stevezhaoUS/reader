@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:reader/services/db_service.dart';
 import 'package:reader/ui/paragraph.dart';
 
 import 'models/book.dart';
@@ -12,30 +14,43 @@ class ReadingPage extends StatefulWidget {
   State<ReadingPage> createState() => _ReadingPageState();
 }
 
-class _ReadingPageState extends State<ReadingPage> {
+class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   String chapterContent = '';
   String chapterTitle = '';
   int chapterIdx = 0;
-
   bool _bottomAppBarVisible = true;
+
+  late Book book;
+  late List<ChapterMeta> bookDirectory;
+  DBService isar = DBService();
 
   @override
   void initState() {
     super.initState();
+    book = widget.book;
     _fetchBookContent();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // App is about to become inactive or go into the background (onPause)
+    } else if (state == AppLifecycleState.resumed) {
+      // App is about to resume from the background (onResume)
+    }
+  }
+
   Future<void> _fetchBookContent() async {
-    final book = widget.book; // Get the book's ID
     // Fetch book content using bookId from your data source
     // For example, you could use dbManager to fetch content by bookId
     // Update 'bookContent' with fetched content
+    int idx = book.tableOfContents[book.lastChapterIdx].idx;
+    Chapter? chapter = await isar.getChatperByIdx(book, idx);
     setState(() {
-      chapterContent =
-          book.chapters[book.currentChapterId].content!; // Update bookContent with fetched content
-      chapterTitle =
-          book.chapters[book.currentChapterId].title!; // Update bookContent with fetched content
-      chapterIdx = book.currentChapterId;
+      if (chapter != null && chapter.content != '') {
+        chapterContent = chapter.content!;
+      }
+      chapterTitle = book.tableOfContents[book.lastChapterIdx].title;
     });
   }
 
@@ -43,6 +58,18 @@ class _ReadingPageState extends State<ReadingPage> {
     setState(() {
       _bottomAppBarVisible = !_bottomAppBarVisible;
     });
+  }
+
+  void changeChapter(int step) async {
+    int cid = min(max(1, chapterIdx + step), book.totalChapters);
+    Chapter? chapter = await isar.getChatperByIdx(book, cid);
+    if (chapter != null && chapter.content != '') {
+      setState(() {
+        chapterContent = chapter.content!;
+        chapterIdx = cid;
+        chapterTitle = chapter.title!;
+      });
+    }
   }
 
   @override
@@ -84,16 +111,11 @@ class _ReadingPageState extends State<ReadingPage> {
                           IconButton(
                             icon: Icon(Icons.arrow_back),
                             onPressed: () {
-                              if (chapterIdx > 0) {
-                                chapterIdx--;
-                                setState(() {
-                                  chapterTitle = widget.book.chapters[chapterIdx].title!;
-                                  chapterContent = widget.book.chapters[chapterIdx].content!;
-                                });
-                              }
+                              changeChapter(-1);
                             },
                           ),
                           Expanded(
+                            flex: 1,
                             child: Slider(
                               value: 0.5, // Replace with actual progress value
                               onChanged: (value) {
@@ -104,19 +126,13 @@ class _ReadingPageState extends State<ReadingPage> {
                           IconButton(
                             icon: Icon(Icons.arrow_forward),
                             onPressed: () {
-                              if (chapterIdx < widget.book.chapters.length - 1) {
-                                chapterIdx++;
-                                setState(() {
-                                  chapterTitle = widget.book.chapters[chapterIdx].title!;
-                                  chapterContent = widget.book.chapters[chapterIdx].content!;
-                                });
-                              }
+                              changeChapter(1);
                               // Handle next chapter navigation
                             },
                           ),
                         ],
                       ),
-                      Divider(),
+                      const Divider(),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         IconButton(
                           icon: Icon(Icons.list),

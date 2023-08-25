@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:path/path.dart';
-import 'package:reader/database_manager.dart';
+import 'package:reader/services/db_service.dart';
 import 'package:reader/patterns.dart';
 
 import '../models/book.dart';
@@ -11,10 +11,11 @@ import '../models/book.dart';
 class LocalFileProcessor {
   String title = '';
   String author = '';
+  DBService isar = DBService();
 
   Future<void> loadAndProcessFile(String filePath) async {
-    final dbHelper = DBManager.instance;
     title = basenameWithoutExtension(filePath);
+    int chapterIdx = 1;
 
     final file = File(filePath);
     final stream = file.openRead().transform(gbk.decoder);
@@ -40,8 +41,15 @@ class LocalFileProcessor {
         if (currentChapterTitle.isNotEmpty && buffer.isNotEmpty) {
           Chapter chapter = Chapter()
             ..title = currentChapterTitle
-            ..content = buffer.toString();
+            ..content = buffer.toString()
+            ..cid = chapterIdx;
+
           book.chapters.add(chapter);
+          ChapterMeta directory = ChapterMeta()
+            ..idx = chapterIdx
+            ..title = currentChapterTitle;
+          book.tableOfContents.add(directory);
+          chapterIdx++;
         }
 
         currentChapterTitle = match.group(0)!.trim();
@@ -51,6 +59,7 @@ class LocalFileProcessor {
         buffer.write(chunk);
       }
     }
-    await dbHelper.updateBook(book);
+    book.totalChapters = chapterIdx - 1;
+    isar.createBook(book);
   }
 }
