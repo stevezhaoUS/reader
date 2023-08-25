@@ -48,10 +48,11 @@ class DBService {
     return await isar.books.filter().idEqualTo(id).findFirst();
   }
 
-  Future deleteBook(int id) async {
+  Future deleteBook(Book book) async {
     final isar = await db;
     return await isar.writeTxn(() async {
-      await isar.books.delete(id);
+      book.chapters.filter().deleteAll();
+      isar.books.delete(book.id);
     });
   }
 
