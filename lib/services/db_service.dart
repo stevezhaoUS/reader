@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/book.dart'; // Import your model classes
@@ -57,5 +59,20 @@ class DBService {
     return await book.chapters.filter().cidEqualTo(cid).findFirst();
   }
 
-  nextChapter(Book book) {}
+  getChapterIdxFromPosition(Book book, int position) {
+    if (position >= book.size) {
+      book.lastChapterIdx = book.totalChapters;
+      book.lastReadPosition = book.tableOfContents[book.totalChapters - 1].offset;
+    }
+    final table = book.tableOfContents;
+    bool found = false;
+    int idx = 1;
+
+    while (!found) {
+      if (position < table[idx].offset) {
+        return idx;
+      }
+      idx++;
+    }
+  }
 }

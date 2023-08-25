@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:reader/services/db_service.dart';
@@ -20,6 +21,8 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   int chapterIdx = 0;
   bool _bottomAppBarVisible = true;
 
+  // Timer? _debounce;
+
   late Book book;
   late List<ChapterMeta> bookDirectory;
   DBService isar = DBService();
@@ -37,6 +40,28 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
       // App is about to become inactive or go into the background (onPause)
     } else if (state == AppLifecycleState.resumed) {
       // App is about to resume from the background (onResume)
+    }
+  }
+
+  // @override
+  // void dispose() {
+  //   _debounce?.cancel();
+  //   super.dispose();
+  // }
+  void handleProgressChange(double value) async {
+    // Handle progress change
+    // if (_debounce?.isActive ?? false) _debounce?.cancel();
+    // _debounce = Timer(const Duration(milliseconds: 300), () {
+    int pos = (value * book.size).toInt();
+    int cid = isar.getChapterIdxFromPosition(book, pos);
+    Chapter? chapter = await isar.getChatperByCid(book, cid);
+    if (chapter != null && chapter.content != '') {
+      setState(() {
+        chapterContent = chapter.content!;
+        chapterIdx = cid;
+        chapterTitle = chapter.title!;
+        book.lastReadPosition = pos;
+      });
     }
   }
 
@@ -63,11 +88,13 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   void changeChapter(int step) async {
     int cid = min(max(1, chapterIdx + step), book.totalChapters);
     Chapter? chapter = await isar.getChatperByCid(book, cid);
+    int offset = book.tableOfContents[cid - 1].offset;
     if (chapter != null && chapter.content != '') {
       setState(() {
         chapterContent = chapter.content!;
         chapterIdx = cid;
         chapterTitle = chapter.title!;
+        book.lastReadPosition = offset;
       });
     }
   }
@@ -117,9 +144,10 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
                           Expanded(
                             flex: 1,
                             child: Slider(
-                              value: 0.5, // Replace with actual progress value
+                              value: book.lastReadPosition / book.size,
                               onChanged: (value) {
                                 // Handle progress change
+                                handleProgressChange(value);
                               },
                             ),
                           ),
