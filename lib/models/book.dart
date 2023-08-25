@@ -9,9 +9,10 @@ class Book {
   String author = '';
   String source = ''; // 书籍来源
   String icon = ''; // 书籍图标路径
-  int totalChapters = 0;
-  int lastChapterIdx = 1;
-  int lastReadPosition = 0;
+  short size = 0;
+  short totalChapters = 0;
+  short lastChapterIdx = 1;
+  short lastReadPosition = 0;
   DateTime lastUpdate = DateTime.now();
   String lastReadChapter = "";
 
@@ -22,16 +23,18 @@ class Book {
 
 @embedded
 class ChapterMeta {
-  late int idx;
+  late int cid; //chapter id
   late String title;
+  short offset = 0;
 }
 
 @collection
 class Chapter {
   Id id = Isar.autoIncrement;
-  int cid = 0;
+  short cid = 0; //chapter id
   late String? title;
   late String? content;
+
   @Backlink(to: 'chapters')
   final book = IsarLink<Book>();
 

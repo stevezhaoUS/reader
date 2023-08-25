@@ -44,8 +44,8 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
     // Fetch book content using bookId from your data source
     // For example, you could use dbManager to fetch content by bookId
     // Update 'bookContent' with fetched content
-    int idx = book.tableOfContents[book.lastChapterIdx].idx;
-    Chapter? chapter = await isar.getChatperByIdx(book, idx);
+    int idx = book.tableOfContents[book.lastChapterIdx].cid;
+    Chapter? chapter = await isar.getChatperByCid(book, idx);
     setState(() {
       if (chapter != null && chapter.content != '') {
         chapterContent = chapter.content!;
@@ -62,7 +62,7 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
 
   void changeChapter(int step) async {
     int cid = min(max(1, chapterIdx + step), book.totalChapters);
-    Chapter? chapter = await isar.getChatperByIdx(book, cid);
+    Chapter? chapter = await isar.getChatperByCid(book, cid);
     if (chapter != null && chapter.content != '') {
       setState(() {
         chapterContent = chapter.content!;

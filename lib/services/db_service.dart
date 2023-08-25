@@ -53,8 +53,8 @@ class DBService {
     });
   }
 
-  Future<Chapter?> getChatperByIdx(Book book, int idx) async {
-    return await book.chapters.filter().idxEqualTo(idx).findFirst();
+  Future<Chapter?> getChatperByCid(Book book, int cid) async {
+    return await book.chapters.filter().cidEqualTo(cid).findFirst();
   }
 
   nextChapter(Book book) {}

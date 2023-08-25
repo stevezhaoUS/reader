@@ -16,6 +16,7 @@ class LocalFileProcessor {
   Future<void> loadAndProcessFile(String filePath) async {
     title = basenameWithoutExtension(filePath);
     int chapterIdx = 1;
+    int offset = 0;
 
     final file = File(filePath);
     final stream = file.openRead().transform(gbk.decoder);
@@ -45,11 +46,13 @@ class LocalFileProcessor {
             ..cid = chapterIdx;
 
           book.chapters.add(chapter);
-          ChapterMeta directory = ChapterMeta()
-            ..idx = chapterIdx
+          ChapterMeta meta = ChapterMeta()
+            ..cid = chapterIdx
+            ..offset = offset
             ..title = currentChapterTitle;
-          book.tableOfContents.add(directory);
+          book.tableOfContents.add(meta);
           chapterIdx++;
+          offset += buffer.length;
         }
 
         currentChapterTitle = match.group(0)!.trim();
@@ -59,6 +62,7 @@ class LocalFileProcessor {
         buffer.write(chunk);
       }
     }
+    book.size = offset;
     book.totalChapters = chapterIdx - 1;
     isar.createBook(book);
   }
