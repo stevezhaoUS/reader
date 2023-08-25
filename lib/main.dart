@@ -3,7 +3,6 @@ import 'package:reader/settings.dart';
 import 'book_shelf.dart';
 
 Future main() async {
-  // await DBManager.instance.isar;
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
