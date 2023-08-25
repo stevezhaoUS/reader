@@ -45,6 +45,10 @@ class _BookshelfPageState extends State<BookshelfPage> {
       String filePath = result.files.single.path!;
       await _localFileProcessor.loadAndProcessFile(filePath);
       await _loadBooks();
+    } else {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
