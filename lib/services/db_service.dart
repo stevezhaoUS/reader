@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/book.dart'; // Import your model classes
@@ -33,6 +31,15 @@ class DBService {
     });
   }
 
+  Future<void> addChaptersToBook(Book book, List<Chapter> chapters) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      book.chapters.addAll(chapters);
+      book.chapters.save();
+      isar.books.put(book);
+    });
+  }
+
   Future<List<Book>> fetchBooks(int offset) async {
     final isar = await db;
     return isar.books.where().offset(offset).limit(10).findAll();
@@ -48,6 +55,11 @@ class DBService {
     return await isar.books.filter().idEqualTo(id).findFirst();
   }
 
+  Future<Chapter?> getChapterById(int id) async {
+    final isar = await db;
+    return await isar.chapters.get(id);
+  }
+
   Future deleteBook(Book book) async {
     final isar = await db;
     return await isar.writeTxn(() async {
@@ -56,24 +68,32 @@ class DBService {
     });
   }
 
-  Future<Chapter?> getChatperByCid(Book book, int cid) async {
-    return await book.chapters.filter().cidEqualTo(cid).findFirst();
+  Future<Iterable<Chapter?>> getChaptersByIds(List<int> ids) async {
+    final isar = await db;
+    return await isar.chapters.getAll(ids);
   }
 
   getChapterIdxFromPosition(Book book, int position) {
-    if (position >= book.size) {
-      book.lastChapterIdx = book.totalChapters;
-      book.lastReadPosition = book.tableOfContents[book.totalChapters - 1].offset;
-    }
     final table = book.tableOfContents;
-    bool found = false;
-    int idx = 1;
+    if (position >= book.size) {
+      return table.last.cid;
+    }
+    int idx = 0;
 
-    while (!found) {
-      if (position < table[idx].offset) {
-        return idx;
+    while (idx < table.length) {
+      var ChapterMeta(:offset, :size) = table[idx];
+      if (position > offset && position < offset + size) {
+        return table[idx].cid;
       }
       idx++;
     }
+    return table.last.cid;
+  }
+
+  Future<int> createChapter(Chapter chapter) async {
+    final isar = await db;
+    return await isar.writeTxn(() async {
+      return isar.chapters.put(chapter);
+    });
   }
 }

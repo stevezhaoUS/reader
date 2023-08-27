@@ -2588,8 +2588,13 @@ const ChapterMetaSchema = Schema(
       name: r'offset',
       type: IsarType.int,
     ),
-    r'title': PropertySchema(
+    r'size': PropertySchema(
       id: 2,
+      name: r'size',
+      type: IsarType.int,
+    ),
+    r'title': PropertySchema(
+      id: 3,
       name: r'title',
       type: IsarType.string,
     )
@@ -2618,7 +2623,8 @@ void _chapterMetaSerialize(
 ) {
   writer.writeLong(offsets[0], object.cid);
   writer.writeInt(offsets[1], object.offset);
-  writer.writeString(offsets[2], object.title);
+  writer.writeInt(offsets[2], object.size);
+  writer.writeString(offsets[3], object.title);
 }
 
 ChapterMeta _chapterMetaDeserialize(
@@ -2630,7 +2636,8 @@ ChapterMeta _chapterMetaDeserialize(
   final object = ChapterMeta();
   object.cid = reader.readLong(offsets[0]);
   object.offset = reader.readInt(offsets[1]);
-  object.title = reader.readString(offsets[2]);
+  object.size = reader.readInt(offsets[2]);
+  object.title = reader.readString(offsets[3]);
   return object;
 }
 
@@ -2646,6 +2653,8 @@ P _chapterMetaDeserializeProp<P>(
     case 1:
       return (reader.readInt(offset)) as P;
     case 2:
+      return (reader.readInt(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2753,6 +2762,59 @@ extension ChapterMetaQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'offset',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ChapterMeta, ChapterMeta, QAfterFilterCondition> sizeEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'size',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ChapterMeta, ChapterMeta, QAfterFilterCondition> sizeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'size',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ChapterMeta, ChapterMeta, QAfterFilterCondition> sizeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'size',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ChapterMeta, ChapterMeta, QAfterFilterCondition> sizeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'size',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
