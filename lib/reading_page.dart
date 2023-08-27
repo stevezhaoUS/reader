@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:reader/services/db_service.dart';
 import 'package:reader/ui/paragraph.dart';
-
 import 'models/book.dart';
 
 class ReadingPage extends StatefulWidget {
@@ -20,9 +19,7 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   String chapterTitle = '';
   int chapterIdx = 0;
   bool _bottomAppBarVisible = true;
-
-  // Timer? _debounce;
-
+  int bottomAppBarHeight = 310;
   late Book book;
   late List<ChapterMeta> bookDirectory;
   DBService isar = DBService();
@@ -43,18 +40,10 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
     }
   }
 
-  // @override
-  // void dispose() {
-  //   _debounce?.cancel();
-  //   super.dispose();
-  // }
   void handleProgressChange(double value) async {
-    // Handle progress change
-    // if (_debounce?.isActive ?? false) _debounce?.cancel();
-    // _debounce = Timer(const Duration(milliseconds: 300), () {
     int pos = (value * book.size).toInt();
     int cid = isar.getChapterIdxFromPosition(book, pos);
-    Chapter? chapter = await isar.getChatperByCid(book, cid);
+    Chapter? chapter = await isar.getChapterById(cid);
     if (chapter != null && chapter.content != '') {
       setState(() {
         chapterContent = chapter.content!;
@@ -66,11 +55,8 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   }
 
   Future<void> _fetchBookContent() async {
-    // Fetch book content using bookId from your data source
-    // For example, you could use dbManager to fetch content by bookId
-    // Update 'bookContent' with fetched content
-    int idx = book.tableOfContents[book.lastChapterIdx].cid;
-    Chapter? chapter = await isar.getChatperByCid(book, idx);
+    int id = book.tableOfContents[book.lastChapterIdx].cid;
+    Chapter? chapter = await isar.getChapterById(id);
     setState(() {
       if (chapter != null && chapter.content != '') {
         chapterContent = chapter.content!;
@@ -86,13 +72,13 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   }
 
   void changeChapter(int step) async {
-    int cid = min(max(1, chapterIdx + step), book.totalChapters);
-    Chapter? chapter = await isar.getChatperByCid(book, cid);
-    int offset = book.tableOfContents[cid - 1].offset;
-    if (chapter != null && chapter.content != '') {
+    int idx = min(max(0, chapterIdx + step), book.tableOfContents.length - 1);
+    Chapter? chapter = await isar.getChapterById(book.tableOfContents[idx].cid);
+    int offset = book.tableOfContents[idx].offset;
+    if (chapter != null) {
       setState(() {
-        chapterContent = chapter.content!;
-        chapterIdx = cid;
+        chapterContent = chapter.content ?? 'Content Missing...';
+        chapterIdx = idx;
         chapterTitle = chapter.title!;
         book.lastReadPosition = offset;
       });
@@ -114,21 +100,32 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
           onTap: () {
             _toggleBottomAppBarVisibility();
           },
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Paragraph(
-                      paragraphs: paragraphs,
-                    )),
-              ),
-              if (_bottomAppBarVisible)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: BottomAppBar(
+          child: LayoutBuilder(builder: (context, constrains) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                        maxHeight:
+                            constrains.maxHeight - (_bottomAppBarVisible ? bottomAppBarHeight : 0)),
+                    child: SingleChildScrollView(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Paragraph(
+                            padding: 0,
+                            paragraphs: paragraphs,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (_bottomAppBarVisible)
+                  BottomAppBar(
                       child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -182,10 +179,10 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
                         ),
                       ])
                     ],
-                  )),
-                )
-            ],
-          ),
+                  ))
+              ],
+            );
+          }),
         ),
       ),
     );

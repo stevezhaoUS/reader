@@ -11,7 +11,7 @@ class Book {
   String icon = ''; // 书籍图标路径
   short size = 0;
   short totalChapters = 0;
-  short lastChapterIdx = 1;
+  short lastChapterIdx = 0;
   short lastReadPosition = 0;
   DateTime lastUpdate = DateTime.now();
   String lastReadChapter = "";
@@ -26,6 +26,7 @@ class ChapterMeta {
   late int cid; //chapter id
   late String title;
   short offset = 0;
+  short size = 0;
 }
 
 @collection
