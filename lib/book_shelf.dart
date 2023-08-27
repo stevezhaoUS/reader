@@ -63,7 +63,7 @@ class _BookshelfPageState extends State<BookshelfPage> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               key: UniqueKey(),
               itemCount: books.length,

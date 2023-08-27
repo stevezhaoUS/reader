@@ -133,7 +133,7 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.arrow_back),
+                            icon: const Icon(Icons.arrow_back),
                             onPressed: () {
                               changeChapter(-1);
                             },
@@ -149,7 +149,7 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.arrow_forward),
+                            icon: const Icon(Icons.arrow_forward),
                             onPressed: () {
                               changeChapter(1);
                               // Handle next chapter navigation
@@ -160,19 +160,19 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
                       const Divider(),
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         IconButton(
-                          icon: Icon(Icons.list),
+                          icon: const Icon(Icons.list),
                           onPressed: () {
                             // Handle bookmark button
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.nightlight),
+                          icon: const Icon(Icons.nightlight),
                           onPressed: () {
                             // Handle favorite button
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.font_download),
+                          icon: const Icon(Icons.font_download),
                           onPressed: () {
                             // Handle favorite button
                           },

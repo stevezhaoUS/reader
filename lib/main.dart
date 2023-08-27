@@ -4,13 +4,15 @@ import 'book_shelf.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Reading App',
       home: HomeTabBar(),
     );
@@ -18,15 +20,17 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeTabBar extends StatefulWidget {
+  const HomeTabBar({super.key});
+
   @override
-  _HomeTabBarState createState() => _HomeTabBarState();
+  HomeTabBarState createState() => HomeTabBarState();
 }
 
-class _HomeTabBarState extends State<HomeTabBar> {
+class HomeTabBarState extends State<HomeTabBar> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    BookshelfPage(),
-    SettingsPage(),
+    const BookshelfPage(),
+    const SettingsPage(),
   ];
 
   @override
