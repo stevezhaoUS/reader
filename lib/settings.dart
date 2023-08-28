@@ -1,88 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:settings_ui/settings_ui.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Settings',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              title: const Text('Notification Settings'),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                // Navigate to the notification settings page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationSettingsPage(),
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Appearance'),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                // Navigate to the appearance settings page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AppearanceSettingsPage(),
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            // Add more settings options here
-          ],
-        ),
-      ),
-    );
-  }
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class NotificationSettingsPage extends StatelessWidget {
-  const NotificationSettingsPage({super.key});
-
+class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notification Settings'),
-      ),
-      body: const Center(
-        child: Text('Notification settings page content goes here.'),
-      ),
-    );
-  }
-}
-
-class AppearanceSettingsPage extends StatelessWidget {
-  const AppearanceSettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Appearance Settings'),
-      ),
-      body: const Center(
-        child: Text('Appearance settings page content goes here.'),
-      ),
-    );
+        appBar: AppBar(title: Text('Settings')),
+        body: SettingsList(sections: [
+          SettingsSection(tiles: [
+            SettingsTile(
+              title: Text('Language'),
+              leading: Icon(Icons.language),
+              onPressed: (BuildContext context) {},
+            ),
+            SettingsTile.switchTile(
+              initialValue: true,
+              title: Text('Use fingerprint'),
+              leading: Icon(Icons.fingerprint),
+              onToggle: (bool value) {},
+            ),
+            SettingsTile.switchTile(
+              title: Text('Dark mode'),
+              leading: Icon(Icons.lightbulb_outline),
+              onToggle: (bool value) {},
+              initialValue: true,
+            ),
+            SettingsTile(
+              title: Text('Logout'),
+              leading: Icon(Icons.exit_to_app),
+              onPressed: (BuildContext context) {},
+            ),
+          ])
+        ]));
   }
 }
