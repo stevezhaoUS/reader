@@ -82,7 +82,7 @@ class DBService {
 
     while (idx < table.length) {
       var ChapterMeta(:offset, :size) = table[idx];
-      if (position > offset && position < offset + size) {
+      if (position >= offset && position <= offset + size) {
         return table[idx].cid;
       }
       idx++;
@@ -95,5 +95,10 @@ class DBService {
     return await isar.writeTxn(() async {
       return isar.chapters.put(chapter);
     });
+  }
+
+  Future<Chapter?> getLastReadChapter(Book book) async {
+    short cid = book.tableOfContents[book.lastChapterIdx].cid;
+    return await getChapterById(cid);
   }
 }

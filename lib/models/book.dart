@@ -13,7 +13,9 @@ class Book {
   short totalChapters = 0;
   short lastChapterIdx = 0;
   short lastReadPosition = 0;
+  short lastReadPage = 0;
   DateTime lastUpdate = DateTime.now();
+  @Deprecated("useless field")
   String lastReadChapter = "";
 
   List<ChapterMeta> tableOfContents = [];

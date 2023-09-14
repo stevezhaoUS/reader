@@ -3,7 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:reader/services/db_service.dart';
 import 'package:reader/ui/paragraph.dart';
+import 'package:reader/views/book_page_view.dart';
 import 'models/book.dart';
+
+enum ReadingMode { page, scroll }
 
 class ReadingPage extends StatefulWidget {
   final Book book;
@@ -18,11 +21,11 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
   String chapterContent = '';
   String chapterTitle = '';
   int chapterIdx = 0;
-  bool _bottomAppBarVisible = true;
-  int bottomAppBarHeight = 310;
+  bool _appBarVisible = true;
+  int readingPosition = 0;
   late Book book;
-  late List<ChapterMeta> bookDirectory;
   DBService isar = DBService();
+  ReadingMode readingMode = ReadingMode.page;
 
   @override
   void initState() {
@@ -67,9 +70,11 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
 
   void _toggleBottomAppBarVisibility() {
     setState(() {
-      _bottomAppBarVisible = !_bottomAppBarVisible;
+      _appBarVisible = !_appBarVisible;
     });
   }
+
+  void updateOffset(int offset) {}
 
   void changeChapter(int step) async {
     int idx = min(max(0, chapterIdx + step), book.tableOfContents.length - 1);
@@ -80,8 +85,10 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
         chapterContent = chapter.content ?? 'Content Missing...';
         chapterIdx = idx;
         chapterTitle = chapter.title!;
-        book.lastReadPosition = offset;
       });
+      book.lastReadPosition = offset;
+      book.lastChapterIdx = idx;
+      isar.update(book);
     }
   }
 
@@ -93,93 +100,23 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
+        appBar: _appBarVisible
+            ? AppBar(
+                title: Text(title),
+              )
+            : null,
         body: GestureDetector(
           onTap: () {
             _toggleBottomAppBarVisibility();
           },
           child: LayoutBuilder(builder: (context, constrains) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            return Stack(
+              alignment: Alignment.bottomCenter,
               children: [
-                Expanded(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxHeight:
-                            constrains.maxHeight - (_bottomAppBarVisible ? bottomAppBarHeight : 0)),
-                    child: SingleChildScrollView(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Paragraph(
-                            padding: 0,
-                            paragraphs: paragraphs,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                if (_bottomAppBarVisible)
-                  BottomAppBar(
-                      child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            onPressed: () {
-                              changeChapter(-1);
-                            },
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Slider(
-                              value: book.lastReadPosition / book.size,
-                              onChanged: (value) {
-                                // Handle progress change
-                                handleProgressChange(value);
-                              },
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.arrow_forward),
-                            onPressed: () {
-                              changeChapter(1);
-                              // Handle next chapter navigation
-                            },
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        IconButton(
-                          icon: const Icon(Icons.list),
-                          onPressed: () {
-                            // Handle bookmark button
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.nightlight),
-                          onPressed: () {
-                            // Handle favorite button
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.font_download),
-                          onPressed: () {
-                            // Handle favorite button
-                          },
-                        ),
-                      ])
-                    ],
-                  ))
+                readingMode == ReadingMode.page
+                    ? BookPageView(book)
+                    : ScrollReadingView(paragraphs: paragraphs, onOffsetChanged: updateOffset),
+                if (_appBarVisible) buildBottomAppBar()
               ],
             );
           }),
@@ -188,8 +125,106 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
     );
   }
 
+  Widget buildBottomAppBar() {
+    return BottomAppBar(
+        child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Visibility(
+          visible: true, //readingMode == ReadingMode.scroll,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  changeChapter(-1);
+                },
+              ),
+              Expanded(
+                flex: 1,
+                child: Slider(
+                  value: book.lastReadPosition / book.size,
+                  onChanged: (value) {
+                    // Handle progress change
+                    handleProgressChange(value);
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.arrow_forward),
+                onPressed: () {
+                  changeChapter(1);
+                  // Handle next chapter navigation
+                },
+              ),
+            ],
+          ),
+        ),
+        Visibility(
+          visible: readingMode == ReadingMode.scroll,
+          child: const Divider(),
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: () {
+              // Handle bookmark button
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.nightlight),
+            onPressed: () {
+              // Handle favorite button
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.font_download),
+            onPressed: () {
+              // Handle favorite button
+            },
+          ),
+        ])
+      ],
+    ));
+  }
+
   Future<bool> _onBackPressed() async {
     Navigator.pop(context, [chapterTitle, chapterIdx]);
     return Future.value(true); // Return true to allow back navigation, false to prevent
+  }
+}
+
+class ScrollReadingView extends StatefulWidget {
+  final List<String> paragraphs;
+  const ScrollReadingView(
+      {super.key,
+      required this.paragraphs,
+      scrollOffset,
+      required void Function(int offset) onOffsetChanged});
+
+  @override
+  State<ScrollReadingView> createState() => _ScrollReadingViewState();
+}
+
+class _ScrollReadingViewState extends State<ScrollReadingView> {
+  double scrollOffset = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final ScrollController scrollController = ScrollController(initialScrollOffset: scrollOffset);
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Paragraph(
+            padding: 0,
+            paragraphs: widget.paragraphs,
+          ),
+        ),
+      ),
+    );
   }
 }
