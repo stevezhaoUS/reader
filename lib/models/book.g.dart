@@ -32,44 +32,49 @@ const BookSchema = CollectionSchema(
       name: r'lastChapterIdx',
       type: IsarType.int,
     ),
-    r'lastReadChapter': PropertySchema(
+    r'lastReadChapterTitle': PropertySchema(
       id: 3,
-      name: r'lastReadChapter',
+      name: r'lastReadChapterTitle',
       type: IsarType.string,
     ),
-    r'lastReadPosition': PropertySchema(
+    r'lastReadPage': PropertySchema(
       id: 4,
+      name: r'lastReadPage',
+      type: IsarType.int,
+    ),
+    r'lastReadPosition': PropertySchema(
+      id: 5,
       name: r'lastReadPosition',
       type: IsarType.int,
     ),
     r'lastUpdate': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'lastUpdate',
       type: IsarType.dateTime,
     ),
     r'size': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'size',
       type: IsarType.int,
     ),
     r'source': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'source',
       type: IsarType.string,
     ),
     r'tableOfContents': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'tableOfContents',
       type: IsarType.objectList,
       target: r'ChapterMeta',
     ),
     r'title': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'title',
       type: IsarType.string,
     ),
     r'totalChapters': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'totalChapters',
       type: IsarType.int,
     )
@@ -103,7 +108,7 @@ int _bookEstimateSize(
   var bytesCount = offsets.last;
   bytesCount += 3 + object.author.length * 3;
   bytesCount += 3 + object.icon.length * 3;
-  bytesCount += 3 + object.lastReadChapter.length * 3;
+  bytesCount += 3 + object.lastReadChapterTitle.length * 3;
   bytesCount += 3 + object.source.length * 3;
   bytesCount += 3 + object.tableOfContents.length * 3;
   {
@@ -126,19 +131,20 @@ void _bookSerialize(
   writer.writeString(offsets[0], object.author);
   writer.writeString(offsets[1], object.icon);
   writer.writeInt(offsets[2], object.lastChapterIdx);
-  writer.writeString(offsets[3], object.lastReadChapter);
-  writer.writeInt(offsets[4], object.lastReadPosition);
-  writer.writeDateTime(offsets[5], object.lastUpdate);
-  writer.writeInt(offsets[6], object.size);
-  writer.writeString(offsets[7], object.source);
+  writer.writeString(offsets[3], object.lastReadChapterTitle);
+  writer.writeInt(offsets[4], object.lastReadPage);
+  writer.writeInt(offsets[5], object.lastReadPosition);
+  writer.writeDateTime(offsets[6], object.lastUpdate);
+  writer.writeInt(offsets[7], object.size);
+  writer.writeString(offsets[8], object.source);
   writer.writeObjectList<ChapterMeta>(
-    offsets[8],
+    offsets[9],
     allOffsets,
     ChapterMetaSchema.serialize,
     object.tableOfContents,
   );
-  writer.writeString(offsets[9], object.title);
-  writer.writeInt(offsets[10], object.totalChapters);
+  writer.writeString(offsets[10], object.title);
+  writer.writeInt(offsets[11], object.totalChapters);
 }
 
 Book _bookDeserialize(
@@ -152,20 +158,21 @@ Book _bookDeserialize(
   object.icon = reader.readString(offsets[1]);
   object.id = id;
   object.lastChapterIdx = reader.readInt(offsets[2]);
-  object.lastReadChapter = reader.readString(offsets[3]);
-  object.lastReadPosition = reader.readInt(offsets[4]);
-  object.lastUpdate = reader.readDateTime(offsets[5]);
-  object.size = reader.readInt(offsets[6]);
-  object.source = reader.readString(offsets[7]);
+  object.lastReadChapterTitle = reader.readString(offsets[3]);
+  object.lastReadPage = reader.readInt(offsets[4]);
+  object.lastReadPosition = reader.readInt(offsets[5]);
+  object.lastUpdate = reader.readDateTime(offsets[6]);
+  object.size = reader.readInt(offsets[7]);
+  object.source = reader.readString(offsets[8]);
   object.tableOfContents = reader.readObjectList<ChapterMeta>(
-        offsets[8],
+        offsets[9],
         ChapterMetaSchema.deserialize,
         allOffsets,
         ChapterMeta(),
       ) ??
       [];
-  object.title = reader.readString(offsets[9]);
-  object.totalChapters = reader.readInt(offsets[10]);
+  object.title = reader.readString(offsets[10]);
+  object.totalChapters = reader.readInt(offsets[11]);
   return object;
 }
 
@@ -187,12 +194,14 @@ P _bookDeserializeProp<P>(
     case 4:
       return (reader.readInt(offset)) as P;
     case 5:
-      return (reader.readDateTime(offset)) as P;
-    case 6:
       return (reader.readInt(offset)) as P;
+    case 6:
+      return (reader.readDateTime(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
+      return (reader.readInt(offset)) as P;
     case 8:
+      return (reader.readString(offset)) as P;
+    case 9:
       return (reader.readObjectList<ChapterMeta>(
             offset,
             ChapterMetaSchema.deserialize,
@@ -200,9 +209,9 @@ P _bookDeserializeProp<P>(
             ChapterMeta(),
           ) ??
           []) as P;
-    case 9:
-      return (reader.readString(offset)) as P;
     case 10:
+      return (reader.readString(offset)) as P;
+    case 11:
       return (reader.readInt(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -659,20 +668,21 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterEqualTo(
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterTitleEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterGreaterThan(
+  QueryBuilder<Book, Book, QAfterFilterCondition>
+      lastReadChapterTitleGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -680,14 +690,14 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterLessThan(
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterTitleLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -695,14 +705,14 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterBetween(
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterTitleBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -711,7 +721,7 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -721,70 +731,126 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterStartsWith(
+  QueryBuilder<Book, Book, QAfterFilterCondition>
+      lastReadChapterTitleStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterEndsWith(
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterTitleEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterContains(
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterTitleContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterMatches(
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterTitleMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterIsEmpty() {
+  QueryBuilder<Book, Book, QAfterFilterCondition>
+      lastReadChapterTitleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadChapterIsNotEmpty() {
+  QueryBuilder<Book, Book, QAfterFilterCondition>
+      lastReadChapterTitleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'lastReadChapter',
+        property: r'lastReadChapterTitle',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadPageEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'lastReadPage',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadPageGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'lastReadPage',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadPageLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'lastReadPage',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> lastReadPageBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'lastReadPage',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -1446,15 +1512,27 @@ extension BookQuerySortBy on QueryBuilder<Book, Book, QSortBy> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterSortBy> sortByLastReadChapter() {
+  QueryBuilder<Book, Book, QAfterSortBy> sortByLastReadChapterTitle() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadChapter', Sort.asc);
+      return query.addSortBy(r'lastReadChapterTitle', Sort.asc);
     });
   }
 
-  QueryBuilder<Book, Book, QAfterSortBy> sortByLastReadChapterDesc() {
+  QueryBuilder<Book, Book, QAfterSortBy> sortByLastReadChapterTitleDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadChapter', Sort.desc);
+      return query.addSortBy(r'lastReadChapterTitle', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> sortByLastReadPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadPage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> sortByLastReadPageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadPage', Sort.desc);
     });
   }
 
@@ -1580,15 +1658,27 @@ extension BookQuerySortThenBy on QueryBuilder<Book, Book, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterSortBy> thenByLastReadChapter() {
+  QueryBuilder<Book, Book, QAfterSortBy> thenByLastReadChapterTitle() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadChapter', Sort.asc);
+      return query.addSortBy(r'lastReadChapterTitle', Sort.asc);
     });
   }
 
-  QueryBuilder<Book, Book, QAfterSortBy> thenByLastReadChapterDesc() {
+  QueryBuilder<Book, Book, QAfterSortBy> thenByLastReadChapterTitleDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadChapter', Sort.desc);
+      return query.addSortBy(r'lastReadChapterTitle', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> thenByLastReadPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadPage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> thenByLastReadPageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastReadPage', Sort.desc);
     });
   }
 
@@ -1686,11 +1776,17 @@ extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
     });
   }
 
-  QueryBuilder<Book, Book, QDistinct> distinctByLastReadChapter(
+  QueryBuilder<Book, Book, QDistinct> distinctByLastReadChapterTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastReadChapter',
+      return query.addDistinctBy(r'lastReadChapterTitle',
           caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Book, Book, QDistinct> distinctByLastReadPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastReadPage');
     });
   }
 
@@ -1758,9 +1854,15 @@ extension BookQueryProperty on QueryBuilder<Book, Book, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Book, String, QQueryOperations> lastReadChapterProperty() {
+  QueryBuilder<Book, String, QQueryOperations> lastReadChapterTitleProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lastReadChapter');
+      return query.addPropertyName(r'lastReadChapterTitle');
+    });
+  }
+
+  QueryBuilder<Book, int, QQueryOperations> lastReadPageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastReadPage');
     });
   }
 

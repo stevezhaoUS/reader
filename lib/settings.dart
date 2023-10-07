@@ -12,29 +12,29 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Settings')),
+        appBar: AppBar(title: const Text('Settings')),
         body: SettingsList(sections: [
           SettingsSection(tiles: [
             SettingsTile(
-              title: Text('Language'),
-              leading: Icon(Icons.language),
+              title: const Text('Language'),
+              leading: const Icon(Icons.language),
               onPressed: (BuildContext context) {},
             ),
             SettingsTile.switchTile(
               initialValue: true,
-              title: Text('Use fingerprint'),
-              leading: Icon(Icons.fingerprint),
+              title: const Text('Use fingerprint'),
+              leading: const Icon(Icons.fingerprint),
               onToggle: (bool value) {},
             ),
             SettingsTile.switchTile(
-              title: Text('Dark mode'),
-              leading: Icon(Icons.lightbulb_outline),
+              title: const Text('Dark mode'),
+              leading: const Icon(Icons.lightbulb_outline),
               onToggle: (bool value) {},
               initialValue: true,
             ),
             SettingsTile(
-              title: Text('Logout'),
-              leading: Icon(Icons.exit_to_app),
+              title: const Text('Logout'),
+              leading: const Icon(Icons.exit_to_app),
               onPressed: (BuildContext context) {},
             ),
           ])

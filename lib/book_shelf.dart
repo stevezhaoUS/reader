@@ -4,7 +4,7 @@ import 'package:reader/services/db_service.dart';
 import 'package:reader/processor/local_file.dart';
 
 import 'models/book.dart';
-import 'reading_page.dart';
+import 'views/reading/reading_page.dart';
 
 class BookshelfPage extends StatefulWidget {
   const BookshelfPage({super.key});
@@ -86,7 +86,7 @@ class _BookshelfPageState extends State<BookshelfPage> {
                   child: ListTile(
                     title: Text('${books[index].title} - ${books[index].author}'),
                     subtitle: Text(books[index]
-                        .lastReadChapter), //books[index].lastReadChapter.value!.title!),
+                        .lastReadChapterTitle), //books[index].lastReadChapter.value!.title!),
                     onTap: () async {
                       // Navigate to the ReadingPage with the selected book
                       final readingStatus = await Navigator.push(
