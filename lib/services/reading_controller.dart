@@ -7,8 +7,7 @@ import '../DTO/fonts_settings.dart';
 import '../models/book.dart';
 import 'db_service.dart';
 
-const int maxPages = 5;
-const int initialPage = 3;
+const int initialPage = 10000;
 
 class ReadingController {
   final Book book;
@@ -17,7 +16,10 @@ class ReadingController {
   late DBService dbService = DBService();
   late Chapter? currentChapter;
   final PageController _pageController = PageController(initialPage: initialPage);
-  int internalPage = 0;
+  int _lastPage = initialPage;
+  bool allowSwipeLeft = false;
+  double pageWidth = 0;
+  double pageHeight = 0;
 
   get pageController {
     return _pageController;
@@ -28,19 +30,32 @@ class ReadingController {
   }
 
   ReadingController(this.book) {
-    pageCache = PageCache(requestChapter: getChapterByIndex);
-    pageBuilder = PageBuilder(FontsSettings.defaultSettings());
+    pageCache = PageCache(book, requestChapter: getChapterByIndex);
+    pageBuilder = PageBuilder(FontsSettings.defaultSettings);
   }
 
   Future<List<BookPage>> getChapterByIndex(int chapterIdx) async {
-    return Future.value([BookPage(chapterIdx: chapterIdx, content: '')]);
+    int id = book.tableOfContents[chapterIdx].cid;
+    Chapter? chapter = await dbService.getChapterById(id);
+    if (chapter != null) {
+      return pageBuilder.buildPagesFromChapter(chapter);
+    } else {
+      return pageBuilder
+          .buildPagesFromChapter(Chapter(title: 'Not found', content: 'Content not found'));
+    }
   }
 
   setViewSize(double width, double height) {
+    if (pageWidth == width && pageHeight == height) {
+      return;
+    }
+    pageWidth = width;
+    pageHeight = height;
     pageBuilder.calcTextSizing(width, height);
+    pageCache.clear();
   }
 
-  Future<BookPage> getPage() async {
+  Future<BookPage> getPage(int _) async {
     if (pageCache.isEmpty) {
       currentChapter = await dbService.getLastReadChapter(book);
       currentChapter ??= await dbService.getChapterById(book.tableOfContents[0].cid);
@@ -48,23 +63,23 @@ class ReadingController {
         throw Exception('could not load chapters');
         // will implement try to download the chapter if the book is from internet
       }
+
       List<BookPage> pages = pageBuilder.buildPagesFromChapter(currentChapter!);
       pageCache.addChapter(currentChapter!.cid, pages);
-      if (book.lastReadPage > 0) {
-        internalPage = book.lastReadPage;
-        return pageCache.getPage(currentChapter!.id, book.lastReadPage);
+      if (pageCache.hasPage(currentChapter!.cid, book.lastReadPage)) {
+        _lastPage += book.lastChapterIdx;
+        _pageController.jumpToPage(_lastPage);
+        return pageCache.getPage(currentChapter!.cid, book.lastReadPage);
       }
     }
-    return pageCache.getPage(currentChapter!.id, internalPage);
+
+    allowSwipeLeft = pageCache.hasPrev;
+
+    return pageCache.curPage;
   }
 
-  List<double> getPaddingLTRB() {
-    return [
-      pageBuilder.horizontalPaddings / 2,
-      pageBuilder.verticalPaddings / 2,
-      pageBuilder.horizontalPaddings / 2,
-      pageBuilder.verticalPaddings / 2
-    ];
+  double getPaddings() {
+    return pageBuilder.paddings;
   }
   /*
   void setupWatcher() async {
@@ -75,8 +90,22 @@ class ReadingController {
   }
   */
 
-  goPrevPage() {}
-  goNextPage() {}
+  goPrevPage() {
+    if (pageCache.hasPrev) {
+      pageCache.prevPage();
+      _pageController.previousPage(
+          duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+    }
+  }
+
+  goNextPage() {
+    if (pageCache.hasNext) {
+      pageCache.nextPage();
+      _pageController.nextPage(
+          duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+    }
+  }
+
   jumpToPage() {}
   openBook(Book book) {}
 }

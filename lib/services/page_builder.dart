@@ -3,10 +3,11 @@ import 'package:reader/DTO/book_page.dart';
 import 'package:reader/DTO/fonts_settings.dart';
 import 'package:reader/models/book.dart';
 
+String example = "马炕;，看到  乳房和着的圣子肉嘟嘟的脸上。去年夏季房屋漏雨，在这张油画上留下了一团团焦黄的水渍；圣母和圣子";
+
 class PageBuilder {
   FontsSettings fontsSettings;
-  double verticalPaddings;
-  double horizontalPaddings;
+  double paddings;
 
   int wordsPerLine = 0;
 
@@ -14,17 +15,16 @@ class PageBuilder {
 
   int wordsPerPage = 0;
 
-  PageBuilder(this.fontsSettings, {this.verticalPaddings = 8.0, this.horizontalPaddings = 8.0});
+  PageBuilder(this.fontsSettings, {this.paddings = 8.0});
 
   void calcTextSizing(width, height) {
-    // Calculate the text area
-    double textAreaWidth = width - horizontalPaddings * 2; // Adjust the factor as needed
-    double textAreaHeight = height - verticalPaddings * 2;
+    double textAreaWidth = width - paddings * 2;
+    double textAreaHeight = height - paddings * 2;
 
     final textPainter = TextPainter(
         textDirection: TextDirection.ltr,
         text: TextSpan(
-          text: "阅读小说\n閱讀小說",
+          text: example,
           style: TextStyle(
             fontFamily: fontsSettings.fontFamily,
             fontSize: fontsSettings.fontSize,
@@ -35,11 +35,15 @@ class PageBuilder {
 
     textPainter.layout();
 
-    double wordWidth = textPainter.width / 4;
-    double lineHeight = textPainter.height / 2;
-    wordsPerLine = textAreaWidth ~/ wordWidth;
+    double wordWidth = textPainter.width / example.length;
+    double lineHeight = fontsSettings.fontSize * fontsSettings.lineHeight;
+    wordsPerLine = textAreaWidth ~/ wordWidth - 1;
     linesPerPage = textAreaHeight ~/ lineHeight - 1;
     wordsPerPage = linesPerPage * wordsPerLine;
+
+    debugPrint('width: $width, height: $height \n'
+        'wordWidth: $wordWidth, lineHeight: $lineHeight \n'
+        'wordsPerLine: $wordsPerLine, linesPerPage: $linesPerPage, wordsPerPage: $wordsPerPage');
   }
 
   List<BookPage> buildPagesFromChapter(Chapter chapter) {
@@ -62,7 +66,9 @@ class PageBuilder {
         buffer.clear();
         continue;
       }
-      if (buffer.isNotEmpty && content[offset] == ' ' && content[offset + 1] == ' ') {
+      if (buffer.isNotEmpty && // 两个全角空格换行
+          content[offset].runes.first == 0x3000 &&
+          content[offset + 1].runes.first == 0x3000) {
         buffer.write('\n  ');
         while (content[++offset] == ' ') {}
         lines += 1;

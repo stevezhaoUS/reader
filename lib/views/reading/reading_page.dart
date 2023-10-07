@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:reader/services/db_service.dart';
+import 'package:reader/ui/appbars/reading_appbar.dart';
 import 'package:reader/ui/paragraph.dart';
-import 'package:reader/views/book_page_view.dart';
-import 'models/book.dart';
+import 'package:reader/views/reading/book_page_view.dart';
+import '../../models/book.dart';
 
 enum ReadingMode { page, scroll }
 
@@ -100,26 +101,25 @@ class _ReadingPageState extends State<ReadingPage> with WidgetsBindingObserver {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
-        appBar: _appBarVisible
-            ? AppBar(
-                title: Text(title),
-              )
-            : null,
         body: GestureDetector(
           onTap: () {
             _toggleBottomAppBarVisibility();
           },
-          child: LayoutBuilder(builder: (context, constrains) {
-            return Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                readingMode == ReadingMode.page
-                    ? BookPageView(book)
-                    : ScrollReadingView(paragraphs: paragraphs, onOffsetChanged: updateOffset),
-                if (_appBarVisible) buildBottomAppBar()
-              ],
-            );
-          }),
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              readingMode == ReadingMode.page
+                  ? BookPageView(book)
+                  : ScrollReadingView(paragraphs: paragraphs, onOffsetChanged: updateOffset),
+              if (_appBarVisible)
+                Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: readingAppBar(title: title, onBack: _onBackPressed)),
+              if (_appBarVisible) buildBottomAppBar()
+            ],
+          ),
         ),
       ),
     );

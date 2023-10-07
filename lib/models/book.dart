@@ -12,14 +12,11 @@ class Book {
   short size = 0;
   short totalChapters = 0;
   short lastChapterIdx = 0;
+  String lastReadChapterTitle = "";
   short lastReadPosition = 0;
   short lastReadPage = 0;
   DateTime lastUpdate = DateTime.now();
-  @Deprecated("useless field")
-  String lastReadChapter = "";
-
   List<ChapterMeta> tableOfContents = [];
-
   final chapters = IsarLinks<Chapter>();
 }
 

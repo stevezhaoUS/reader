@@ -15,11 +15,11 @@ class FontsSettings {
     required this.fontWeight,
   });
 
-  static defaultSettings() {
+  static get defaultSettings {
     return FontsSettings(
-      fontFamily: 'Roboto',
-      fontSize: 15.00,
-      lineHeight: 1,
+      fontFamily: 'SimSun',
+      fontSize: 12.00,
+      lineHeight: 1.5,
       fontColor: const Color(0xFF000000),
       fontWeight: FontWeight.normal,
     );

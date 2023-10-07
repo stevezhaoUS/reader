@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reader/DTO/book_page.dart';
+import 'package:reader/models/book.dart';
 import 'package:reader/services/page_cache.dart';
 
 void main() {
+  Book book = Book();
   test('Adding and retrieving pages', () async {
-    final pageCache = PageCache(requestChapter: (chapterIdx) async {
+    final pageCache = PageCache(book, requestChapter: (chapterIdx) async {
       // Replace this with your mock implementation of requestChapter function
       return [];
     });
@@ -25,7 +27,7 @@ void main() {
   });
 
   test('Adding whole chapter at once', () async {
-    final pageCache = PageCache(requestChapter: (chapterIdx) async {
+    final pageCache = PageCache(book, requestChapter: (chapterIdx) async {
       // Replace this with your mock implementation of requestChapter function
       return [];
     });
@@ -60,7 +62,7 @@ void main() {
 
   //test clear function of page cache that should has no pages
   test('after clear function, cache should be empty', () async {
-    final pageCache = PageCache(requestChapter: (chapterIdx) async {
+    final pageCache = PageCache(book, requestChapter: (chapterIdx) async {
       // Replace this with your mock implementation of requestChapter function
       return [];
     });
@@ -78,7 +80,7 @@ void main() {
 
   test('requestChapter should be called if the chapter is not in cache', () async {
     int requestChapterCalled = 0;
-    final pageCache = PageCache(requestChapter: (chapterIdx) async {
+    final pageCache = PageCache(book, requestChapter: (chapterIdx) async {
       requestChapterCalled++;
       return [BookPage(chapterIdx: 1, content: 'page1')];
     });
@@ -95,12 +97,10 @@ void main() {
   });
 
   test('chapter will be deleted if exceed maximum chapter length', () async {
-    final pageCache = PageCache(
-        requestChapter: (chapterIdx) async {
-          // Replace this with your mock implementation of requestChapter function
-          return [];
-        },
-        maxChapter: 2);
+    final pageCache = PageCache(book, requestChapter: (chapterIdx) async {
+      // Replace this with your mock implementation of requestChapter function
+      return [];
+    }, maxChapter: 2);
 
     BookPage page = BookPage(chapterIdx: 0, content: 'page1');
     pageCache.addPage(page);

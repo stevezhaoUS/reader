@@ -6,8 +6,8 @@ import 'package:reader/services/page_builder.dart';
 
 void main() {
   test('calcTextSizing', () async {
-    final pageBuilder = PageBuilder(FontsSettings.defaultSettings());
-    pageBuilder.calcTextSizing(100, 100);
+    final pageBuilder = PageBuilder(FontsSettings.defaultSettings);
+    pageBuilder.calcTextSizing(100.0, 100.0);
     expect(pageBuilder.wordsPerLine, equals(5));
     expect(pageBuilder.linesPerPage, equals(4));
     expect(pageBuilder.wordsPerPage, equals(20));
@@ -22,7 +22,7 @@ void main() {
   });
 
   test('generatePagesFromChapter', () async {
-    final pageBuilder = PageBuilder(FontsSettings.defaultSettings());
+    final pageBuilder = PageBuilder(FontsSettings.defaultSettings);
     pageBuilder.calcTextSizing(100, 100);
     Chapter chapter = Chapter(title: 'Chapter 1', content: '''一二三  四五六  七八九  十一二三''');
     List<BookPage> pages = pageBuilder.buildPagesFromChapter(chapter);
