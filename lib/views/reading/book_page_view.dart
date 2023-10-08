@@ -20,12 +20,6 @@ class _BookPageViewState extends State<BookPageView> {
   void initState() {
     super.initState();
     _readingController = ReadingController(widget.book);
-    // _readingController.pageController.addListener(() {
-    //   // if (_pageController.page! >= totalPage - 1) {
-    //   //   _pageController.jumpToPage(0);
-    //   // }
-    //   //call next page or previous page in _readingController
-    // });
   }
 
   @override

@@ -9,15 +9,15 @@ class readingAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 4.0,
+      elevation: 1,
       child: Container(
-        color: Colors.blue, // Customize the background color
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        color: const Color(0xFF0E3311).withOpacity(0.5), // Customize the background color
+        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white), // Back button
+              icon: Icon(Icons.arrow_back, color: Colors.black), // Back button
               onPressed: onBack,
             ),
             Text(
