@@ -95,6 +95,7 @@ class ReadingController {
       pageCache.nextPage();
       _pageController.nextPage(
           duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+
     }
   }
 
