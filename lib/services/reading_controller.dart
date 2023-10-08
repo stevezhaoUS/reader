@@ -81,20 +81,12 @@ class ReadingController {
   double getPaddings() {
     return pageBuilder.paddings;
   }
-  /*
-  void setupWatcher() async {
-    Isar isar = await dbService.db;
-    isar.books.watchObject(widget.book.id).listen((book) {
-      debugPrint('event: ${book?.lastChapterIdx}');
-    });
-  }
-  */
 
   goPrevPage() {
     if (pageCache.hasPrev) {
       pageCache.prevPage();
       _pageController.previousPage(
-          duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
     }
   }
 
@@ -102,7 +94,8 @@ class ReadingController {
     if (pageCache.hasNext) {
       pageCache.nextPage();
       _pageController.nextPage(
-          duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+
     }
   }
 
