@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:reader/settings.dart';
+import 'package:reader/services/settings_service.dart';
 import 'book_shelf.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load user settings during app bootstrap
+  await SettingsService.instance.loadSettings();
+  
   runApp(const MyApp());
 }
 
@@ -12,9 +17,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    final settings = SettingsService.instance.currentSettings;
+    
+    return MaterialApp(
       title: 'Reading App',
-      home: HomeTabBar(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: settings.useDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: const HomeTabBar(),
     );
   }
 }
