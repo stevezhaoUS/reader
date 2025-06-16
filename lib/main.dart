@@ -1,26 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:reader/settings.dart';
+import 'package:reader/services/settings_service.dart';
+import 'package:reader/models/user_settings.dart';
 import 'book_shelf.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load user settings during app bootstrap
+  await SettingsService.instance.loadSettings();
+  
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late UserSettings _currentSettings;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentSettings = SettingsService.instance.currentSettings;
+  }
+
+  // Method to refresh the app when settings change
+  void _refreshApp() {
+    setState(() {
+      _currentSettings = SettingsService.instance.currentSettings;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Reading App',
-      home: HomeTabBar(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: _currentSettings.useDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: HomeTabBar(onSettingsChanged: _refreshApp),
     );
   }
 }
 
 class HomeTabBar extends StatefulWidget {
-  const HomeTabBar({super.key});
+  final VoidCallback? onSettingsChanged;
+  
+  const HomeTabBar({super.key, this.onSettingsChanged});
 
   @override
   HomeTabBarState createState() => HomeTabBarState();
@@ -28,10 +59,16 @@ class HomeTabBar extends StatefulWidget {
 
 class HomeTabBarState extends State<HomeTabBar> {
   int _currentIndex = 0;
-  final List<Widget> _pages = [
-    const BookshelfPage(),
-    const SettingsPage(),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const BookshelfPage(),
+      SettingsPage(onSettingsChanged: widget.onSettingsChanged),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
