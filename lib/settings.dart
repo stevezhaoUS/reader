@@ -4,7 +4,9 @@ import 'package:reader/services/settings_service.dart';
 import 'package:reader/models/user_settings.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final VoidCallback? onSettingsChanged;
+  
+  const SettingsPage({super.key, this.onSettingsChanged});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -24,6 +26,8 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _currentSettings = newSettings;
     });
+    // Notify parent widget that settings have changed
+    widget.onSettingsChanged?.call();
   }
 
   @override
